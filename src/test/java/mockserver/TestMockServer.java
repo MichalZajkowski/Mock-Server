@@ -43,6 +43,5 @@ public class TestMockServer {
         mock.createExpectationForForward();
         mock.hitTheServerWithGetRequest();
         mock.verifyGetRequest();
-
     }
 }
