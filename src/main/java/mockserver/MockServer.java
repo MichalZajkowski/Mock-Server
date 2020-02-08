@@ -27,7 +27,7 @@ class MockServer {
     private final static String POST = "POST";
     private final static String URL = "http://127.0.0.1:1080";
     private final static String ESKY = "www.esky.com";
-    private final static String INDEX_HTML = "index.html";
+    private final static String INDEX_HTML = "/index.html";
     private final static String VALIDATE = "/validate";
 
     void verifyPostRequest() {
@@ -60,7 +60,6 @@ class MockServer {
             post.getRequestLine();
             post.setEntity(stringEntity);
             response = client.execute(post);
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
