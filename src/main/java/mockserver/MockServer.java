@@ -21,27 +21,36 @@ import static org.mockserver.model.StringBody.exact;
 
 class MockServer {
 
+    private final static String LOCALHOST = "localhost";
+    private final static String MOCK_SERVER_CLIENT = "127.0.0.1";
+    private final static String GET = "GET";
+    private final static String POST = "POST";
+    private final static String URL = "http://127.0.0.1:1080";
+    private final static String ESKY = "www.esky.com";
+    private final static String INDEX_HTML = "index.html";
+    private final static String VALIDATE = "/validate";
+
     void verifyPostRequest() {
-        new MockServerClient("localhost", 1080).verify(
+        new MockServerClient(LOCALHOST, 1080).verify(
                 request()
-                        .withMethod("POST")
-                        .withPath("/validate")
+                        .withMethod(POST)
+                        .withPath(VALIDATE)
                         .withBody(exact("{username: 'user', password: 'password'}")),
                 VerificationTimes.exactly(1)
         );
     }
 
     void verifyGetRequest() {
-        new MockServerClient("localhost", 1080).verify(
+        new MockServerClient(LOCALHOST, 1080).verify(
                 request()
-                        .withMethod("GET")
-                        .withPath("/index.html"),
+                        .withMethod(GET)
+                        .withPath(INDEX_HTML),
                 VerificationTimes.exactly(1)
         );
     }
 
     HttpResponse hitTheServerWithPostRequest() {
-        String url = "http://127.0.0.1:1080/validate";
+        String url = URL + VALIDATE;
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(url);
         HttpResponse response;
@@ -59,7 +68,7 @@ class MockServer {
     }
 
     void hitTheServerWithGetRequest() {
-        String url = "http://127.0.0.1:1080/" + "index.html";
+        String url = URL + INDEX_HTML;
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet get = new HttpGet(url);
         try {
@@ -70,33 +79,20 @@ class MockServer {
     }
 
     void createExpectationForInvalidAuth() {
-        new MockServerClient("127.0.0.1", 1080)
-                .when(
-                        request()
-                                .withMethod("POST")
-                                .withPath("/validate"),
-                        exactly(1)
-                )
-                .respond(
-                        response()
-                                .withStatusCode(401)
-                                .withBody("{ message: 'incorrect username and password combination' }")
-                                .withDelay(TimeUnit.SECONDS, 1)
-                );
+        new MockServerClient(MOCK_SERVER_CLIENT, 1080)
+                .when(request().withMethod(POST).withPath(VALIDATE), exactly(1)).respond(
+                response()
+                        .withStatusCode(401)
+                        .withBody("{ message: 'incorrect username and password combination' }")
+                        .withDelay(TimeUnit.SECONDS, 1)
+        );
     }
 
     void createExpectationForForward() {
-        new MockServerClient("127.0.0.1", 1080)
-                .when(
-                        request()
-                                .withMethod("GET")
-                                .withPath("/index.html"),
+        new MockServerClient(MOCK_SERVER_CLIENT, 1080)
+                .when(request().withMethod(GET).withPath(INDEX_HTML),
                         exactly(1)
                 )
-                .forward(
-                        forward()
-                                .withHost("www.esky.com")
-                                .withScheme(HttpForward.Scheme.HTTP)
-                );
+                .forward(forward().withHost(ESKY).withScheme(HttpForward.Scheme.HTTP));
     }
 }
