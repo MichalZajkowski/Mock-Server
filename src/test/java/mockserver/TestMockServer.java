@@ -12,7 +12,7 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 public class TestMockServer {
 
     private static ClientAndServer mockServer;
-    private MockServer mock = new MockServer();
+    private final MockServer mock = new MockServer();
 
     @BeforeClass
     public static void startServer() {
@@ -28,7 +28,7 @@ public class TestMockServer {
     public void whenPostRequestMockServer_thenServerReceived() {
         mock.createExpectationForInvalidAuth();
         mock.hitTheServerWithPostRequest();
-        mock.verifyPostRequest();
+        mock.verifyGetRequest();
     }
 
     @Test
